@@ -72,25 +72,25 @@ class TFNet(nn.Module):
         
         # apply spatial filter equally to velocity x and y
         u_intermediate = self.spatial_filter(xx.reshape(xx.shape[0]*xx.shape[1], 1, self.h_dim, self.w_dim))
-        u_intermediate = u_intermediate.reshape(xx.shape[0], xx.shape[1], self.h_dim, self.w_dim)
+        u_intermediate = u_intermediate.reshape(xx.shape[0], xx.shape[1], self.h_dim, self.w_dim) #(time, full_batch, h, w)
         
         # u_prime
-        u_prime = (xx - u_intermediate)[:, -self.input_channels:]
+        u_prime = (xx - u_intermediate)[:, -self.input_channels:] #(time, self.input_channels, h, w)
         
         # u_mean
         u_intermediate = u_intermediate.reshape(u_intermediate.shape[0], 
                                                 u_intermediate.shape[1]//self.inp_dim, 
-                                                self.inp_dim, self.h_dim, self.w_dim)
+                                                self.inp_dim, self.h_dim, self.w_dim) # (time, full_batch//inp_dim, inp_dim, h, w)
         
-        u_mean = self.temporal_weights[0] * u_intermediate[:,:self.input_length]
+        u_mean = self.temporal_weights[0] * u_intermediate[:,:self.input_length] # (time, self.input_length, inp_dim, h, w)
         for i in range(1, self.time_range):
-            u_mean += self.temporal_weights[i] * u_intermediate[:, i:i + self.input_length]
-        u_mean = u_mean.reshape(u_mean.shape[0], -1, self.h_dim, self.w_dim)
+            u_mean += self.temporal_weights[i] * u_intermediate[:, i:i + self.input_length] #(time, self.input_length, inp_dim, h, w)
+        u_mean = u_mean.reshape(u_mean.shape[0], -1, self.h_dim, self.w_dim) #(time, self.input_length*inp_dim, h, w) which is (time, self.input_channels, h, w)
         
         # print(u_intermediate.shape, u_mean.shape)
         # u_tilde
-        u_intermediate = u_intermediate.reshape(u_intermediate.shape[0], -1, self.h_dim, self.w_dim)
-        u_tilde = u_intermediate[:,(self.time_range-1)*self.inp_dim:] - u_mean
+        u_intermediate = u_intermediate.reshape(u_intermediate.shape[0], -1, self.h_dim, self.w_dim) # (time, full_batch, h, w)
+        u_tilde = u_intermediate[:,(self.time_range-1)*self.inp_dim:] - u_mean # (time, self.input_channels, h, w)
         
         out_conv1_mean, out_conv2_mean, out_conv3_mean, out_conv4_mean = self.encoder1(u_mean)
         out_conv1_tilde, out_conv2_tilde, out_conv3_tilde, out_conv4_tilde = self.encoder2(u_tilde)

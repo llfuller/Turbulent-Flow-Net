@@ -58,5 +58,6 @@ class ResNet(nn.Module):
         self.model = nn.Sequential(*layers)
              
     def forward(self, xx):
-        out = self.model(xx)
+        print(f"xx.view:{xx.view(-1,1,64,64).shape}")
+        out = self.model(xx.view(-1,1,64,64))
         return out

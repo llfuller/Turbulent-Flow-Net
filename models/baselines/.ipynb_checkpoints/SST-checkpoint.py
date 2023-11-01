@@ -8,9 +8,8 @@ import torch.optim as optim
 import torch.nn.functional as F
 import numpy as np
 from torch.utils import data
-import losses as losses
-from train import train_epoch, eval_epoch, test_epoch, Dataset
-from warp import GaussianWarpingScheme
+import models.penalty as losses
+from utils.train_utils import train_epoch, eval_epoch, test_epoch, Dataset
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 

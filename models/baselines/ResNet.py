@@ -31,7 +31,7 @@ class Resblock(nn.Module):
         
         
     def forward(self, xx):
-        out = self.layer1(xx)  
+        out = self.layer1(xx)
         if self.input_channels != self.hidden_dim:
             out = self.layer2(out) + self.upscale(xx)
         else:

@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: benchmark
+spec:
+  containers:
+  - name: gpu-container
+    image: gitlab-registry.nrp-nautilus.io/prp/jupyter-stack/minimal
+    command: ["/bin/bash","-c"]
+    args: ["git clone https://github.com/Rose-STL-Lab/Turbulent-Flow-Net;
+            cd Turbulent-Flow-Net;
+            pip3 install kornia numpy pandas;
+            pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118;
+            wget https://roselab1.ucsd.edu/seafhttp/files/dda40b7d-ae6c-44bb-ae67-a2b6e2f949de/rbc_data.pt;
+            python data_gen.py;
+            sleep infinity"]
+    volumeMounts:
+    - mountPath: /dev/shm
+      name: dshm
+    resources:
+      limits:
+        nvidia.com/gpu: "1"
+        memory: "32G"
+        cpu: "4"
+        ephemeral-storage: 1024Gi
+  restartPolicy: Never
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: nvidia.com/gpu.product
+            operator: In
+            values:
+            - NVIDIA-GeForce-RTX-3090
+  volumes:
+    - emptyDir:
+        medium: Memory
+      name: dshm
