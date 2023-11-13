@@ -23,6 +23,8 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
+import radialProfile
+import kornia
 # from torch.utils import data
 
 a_list = [ 291.7047045,   406.81669102,  514.73942872,  615.0306772,   707.77128018,
@@ -63,4 +65,177 @@ plt.xlabel("Prediction Step")
 plt.xticks(fontsize=14)
 plt.yticks(fontsize=14)
 plt.savefig("lawson_plots/rmse_curve_plot.png", dpi=300, bbox_inches='tight')
+plt.show()
+
+
+def TKE(preds):
+ """
+ Calculate the Turbulent Kinetic Energy (TKE) for a 2D fluid dynamics simulation.
+
+ Parameters:
+ preds (numpy.ndarray): The predictions array where each row represents a different
+                        instance and each column represents a spatial point in the simulation.
+
+ Returns:
+ numpy.ndarray: A 1D array of TKE values, representing the mean kinetic energy per unit mass
+                due to turbulence in the flow for each instance.
+ """
+ mean_flow = np.expand_dims(np.mean(preds, axis=1), axis=1)
+ tur_preds = np.mean((preds - mean_flow) ** 2, axis=1)
+ tke = (tur_preds[0] + tur_preds[1]) / 2
+ return tke
+
+
+def tke2spectrum(tke):
+ """
+ Convert a field of Turbulent Kinetic Energy (TKE) into its spectral representation using a Fourier transform.
+
+ Parameters:
+ tke (numpy.ndarray): A 2D array representing the spatial distribution of TKE.
+
+ Returns:
+ numpy.ndarray: A 1D array representing the radial spectrum of the TKE.
+ """
+ """Convert TKE field to spectrum"""
+ sp = np.fft.fft2(tke)
+ sp = np.fft.fftshift(sp)
+ sp = np.real(sp * np.conjugate(sp))
+ sp1D = radialProfile.azimuthalAverage(sp)
+ return sp1D
+
+
+def spectrum_band(tensor):
+ """
+ Calculate the mean and standard deviation of the spectral bands of the TKE for a series of simulations.
+
+ Parameters:
+ tensor (numpy.ndarray): A multi-dimensional array where each element represents TKE data for a different simulation.
+
+ Returns:
+ tuple: A tuple containing the mean and standard deviation of the spectral bands.
+ """
+ tensor = inverse_seqs(tensor)
+ spec = np.array([tke2spectrum(TKE(tensor[i])) for i in range(tensor.shape[0])])
+ return np.mean(spec, axis=0), np.std(spec, axis=0)
+
+
+def inverse_seqs(tensor):
+ """
+ Reshape and transpose a tensor to match the required input shape for TKE calculation.
+
+ Parameters:
+ tensor (numpy.ndarray): The input data tensor.
+
+ Returns:
+ numpy.ndarray: The reshaped and transposed tensor.
+ """
+ tensor = tensor.reshape(-1, 7, 60, 2, 64, 64)
+ tensor = tensor.transpose(0, 2, 3, 1, 4, 5)
+ tensor = tensor.transpose(0, 1, 2, 4, 3, 5).reshape(-1, 60, 2, 64, 448)
+ tensor = tensor.transpose(0, 2, 1, 3, 4)
+ return tensor
+
+
+def TKE_mean(tensor):
+ """
+ Calculate the mean Turbulent Kinetic Energy (TKE) for a given tensor.
+
+ Parameters:
+ tensor (numpy.ndarray): A tensor representing the flow field data. It can be either already reshaped or raw.
+
+ Returns:
+ numpy.ndarray: The mean TKE value.
+ """
+ if tensor.shape[-1] == 448:
+  return TKE(tensor)
+ tensor = inverse_seqs(tensor)
+ tke_mean = 0
+ for i in range(0, min(70, tensor.shape[0])):
+  tke_mean += TKE(tensor[i])
+ tke_mean = tke_mean / tensor.shape[0]
+ return tke_mean
+
+
+print(f"Shape of test_preds_loaded: {test_preds_loaded.shape}") # (35, 60, 2, 64, 64) = (t,
+# ValueError: cannot reshape array of size 491520 into shape (7,60,2,64,64)
+# (t, b??, v_x or v_y, h, w) TODO: Check to see whether using only times up to 7 is valid, since plot looks slightly different
+tkes = [TKE_mean(test_preds_loaded[:7])]
+# title = ["Target","Con TF-net", "TF-net", "U_net",  "GAN",  "ResNet", "ConvLSTM",  "SST",  "DHPM"]
+title = ["TF-net"]
+fig=plt.figure(figsize=(15, 5))
+# columns = 9
+columns = 1
+rows = 1
+for i in range(columns):
+    fig.add_subplot(rows, columns, i+1)
+    plt.imshow(tkes[i][:64,:64])
+    plt.xlabel(title[i], size = 15, rotation=0, labelpad = -100)
+    plt.xticks([])
+    plt.yticks([])
+plt.savefig("Kinetic Energy.png", dpi = 400,bbox_inches = 'tight')
+plt.show()
+
+# animate_this = test_preds_loaded[0,:,0,:,:] #(60,64,64)
+animate_this = test_trues_loaded[0,:,1,:,:] #(60,64,64)
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+
+# Your array (35, 64, 64)
+# animate_this = test_trues_loaded[:,0,0,:,:]
+
+# Define the figure and axis for the animation
+fig, ax = plt.subplots()
+
+# Set up the plot
+im = ax.imshow(animate_this[0], cmap='viridis', interpolation='none')
+
+# Initialization function: plot the background of each frame
+def init():
+    im.set_data(np.zeros((64, 64)))
+    return [im]
+
+# Animation update function: this is called sequentially
+def update(frame):
+    im.set_data(animate_this[frame])
+    return [im]
+
+# Create the animation object
+ani = FuncAnimation(fig, update, frames=range(35), init_func=init, blit=True)
+
+# Save the animation to a file
+ani.save('animation_truth_V.gif', writer='ffmpeg', fps=5)
+
+plt.close(fig)  # Close the figure to prevent it from displaying statically
+
+
+# Divergence stuff
+def divergence(preds):
+ # preds: batch_size*output_steps*2*H*W
+ preds_u = preds[:, :, 0]
+ preds_v = preds[:, :, 1]
+ u = torch.from_numpy(preds_u).float().to(device)
+ v = torch.from_numpy(preds_v).float().to(device)
+ # Sobolev gradients
+ field_grad = kornia.filters.SpatialGradient()
+ u_x = field_grad(u)[:, :, 0]
+ v_y = field_grad(v)[:, :, 1]
+ div = np.mean(np.abs((v_y + u_x).cpu().data.numpy()), axis=(0, 2, 3))
+ return div
+
+
+dhpm_preds = np.expand_dims(dhpm["preds"].transpose(1,0,2,3), axis = 0)
+divs = [divergence(preds[i]) for i in range(9)]
+linestyles = ['-', '--', '-.', ':','-.', '--', '-.', ':','-.','--']
+fig=plt.figure(figsize=(8, 8))
+idx = np.array(list(range(0,60,4)))
+plt.plot(idx+1, divs[i][idx], label = title[i], linewidth = 2, linestyle=':')
+plt.plot(idx+1, divs[0][idx], label = title[0], linewidth = 2, linestyle=linestyles[0], color = 'k')
+
+plt.ylabel("Mean Absolute Divergence", size = 18)
+plt.xlabel("Predition Step", size = 18)
+plt.legend(fontsize=11)
+plt.xticks(fontsize=14)
+plt.yticks(fontsize=14)
+plt.savefig("divergence.png", dpi = 400, bbox_inches = 'tight')
 plt.show()

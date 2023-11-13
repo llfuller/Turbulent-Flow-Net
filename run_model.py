@@ -11,6 +11,7 @@ from tqdm import trange
 # from models.baselines import ConvLSTM, DHPM, GAN, ResNet, SST, Unet  # Assuming the class is named Unet
 from models.baselines import DHPM, ResNet, Unet  # Assuming the class is named Unet
 from models.baselines import ConvLSTM
+from models.baselines import ResNetMini
 from models.baselines import GAN
 # import models.baselines.DHPM
 
@@ -19,6 +20,24 @@ from utils import Dataset, train_epoch, eval_epoch, test_epoch, divergence, spec
 from multiprocessing import freeze_support
 
 if __name__ == '__main__':
+
+    def reshape_data_for_convLSTM(data):
+        # data is of shape (b, 2*t, h, w)
+        b, two_t, h, w = data.shape
+        t = two_t // 2  # Assuming 2*t is always even
+        
+        # Split the data into two halves along the second axis (time)
+        data_height, data_width = data.chunk(2, dim=1)
+        
+        # Stack the halves to create a new channel dimension
+        # Now we have shape (b, 2, t, h, w), where 2 is for height and width
+        data_stacked = torch.stack((data_height, data_width), dim=2)
+        
+        # Transpose to get (t, b, c, h, w)
+        data_reshaped = data_stacked.permute(2, 0, 1, 3, 4)
+        
+        return data_reshaped
+
     freeze_support()  # Needed when freezing to create a standalone executable
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -56,7 +75,8 @@ if __name__ == '__main__':
                   "convlstm":ConvLSTM.CLSTM, 
                   "sst":None, 
                   "dhpm":DHPM.DHPM, 
-                "resnet":ResNet.ResNet
+                "resnet":ResNet.ResNet,
+                "resnetmini":ResNetMini.ResNet
                 }
     model_dict = {args.model: model_dict[args.model]}
 
@@ -114,6 +134,7 @@ if __name__ == '__main__':
         # print(f"train_set.shape:{train_set[0].shape}")
         sample_x, sample_y = train_set[0]
         things_in_train_set = sample_x.shape[0]
+        print(len(train_set))
         print(f"sample_x.shape:{sample_x.shape}")
         print(f"sample_y.shape:{sample_y.shape}")
         print(f"sample_x[0].shape:{sample_x[0].shape}")
@@ -133,6 +154,12 @@ if __name__ == '__main__':
             model = ResNet.ResNet(input_channels = 62,#input_length*inp_dim,#input_length*inp_dim,
                                 output_channels = inp_dim,
                                 kernel_size = kernel_size).to(device)
+        elif model_str == 'resnetmini': # runs on home  PC, keep batch size <= 8
+            model = ResNetMini.ResNet(input_channels = 62,#input_length*inp_dim,#input_length*inp_dim,
+                                output_channels = inp_dim,
+                                kernel_size = kernel_size).to(device)
+                                # python run_model.py --time_range=6 --output_length=6 --input_length=26 --batch_size=2 --learning_rate=0.005 --decay_rate=0.9 --coef=0.001 --seed=0 --model=resnetmini
+
         elif model_str == 'convlstm':
             model = ConvLSTM.CLSTM(input_size = sample_x[0].shape,#input_length*inp_dim,#input_length*inp_dim,
                                 channels = 62).to(device)
@@ -168,6 +195,12 @@ if __name__ == '__main__':
         valid_rmse = []
         test_rmse = []
         min_rmse = 1e8
+
+        # Assuming 'model' is your PyTorch model
+        num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+        print(f"Number of trainable parameters: {num_params}")
+        print(f"num_epochs:{num_epoch}")
         for i in trange(num_epoch):
             start = time.time()
             torch.cuda.empty_cache()
@@ -175,6 +208,8 @@ if __name__ == '__main__':
             # for i, (x_batch, y_batch) in enumerate(train_loader):
             #     print("Shape of x_batch:", x_batch.shape)
             #     print("Shape of y_batch:", y_batch.shape)
+            # print("Does train_loader have a shape?")
+            # print(f"train_loader.shape:{train_loader.shape}")
             model.train()
 
 

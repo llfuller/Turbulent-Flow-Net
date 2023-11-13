@@ -86,6 +86,7 @@ class ConvLSTM(nn.Module):
         self.cell_list = nn.ModuleList(cell_list)
 
     def forward(self, input_tensor, hidden_state=None):
+        print(f"input_tensor.shape:{input_tensor.shape}")
         if not self.batch_first:
             # (t, b, c, h, w) -> (b, t, c, h, w)
             input_tensor = input_tensor.permute(1, 0, 2, 3, 4)
@@ -105,6 +106,7 @@ class ConvLSTM(nn.Module):
 
             h, c = hidden_state[layer_idx]
             output_inner = []
+            print(f"cur_layer_input.shape:{cur_layer_input.shape}")
             for t in range(seq_len):
 
                 h, c = self.cell_list[layer_idx](input_tensor=cur_layer_input[:, t, :, :, :],
