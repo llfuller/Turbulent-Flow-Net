@@ -1,7 +1,6 @@
 import torch
 import kornia
 import numpy as np
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 ##### Divergence over forecasting horizon #####
@@ -9,8 +8,8 @@ def divergence(preds):
     #preds: batch_size*output_steps*2*H*W
     preds_u = preds[:,:,0]
     preds_v = preds[:,:,1]
-    u = torch.from_numpy(preds_u).float().to(device)
-    v = torch.from_numpy(preds_v).float().to(device)
+    u = torch.from_numpy(preds_u).float()
+    v = torch.from_numpy(preds_v).float()
     #Sobolev gradients
     field_grad = kornia.filters.SpatialGradient()
     u_x = field_grad(u)[:,:,0]

@@ -4,7 +4,11 @@ import numpy as np
 from torch.utils import data
 import warnings
 warnings.filterwarnings("ignore")
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = None
+
+def update_train_util_device(run_model_device):
+    global device
+    device = run_model_device
 
 class Dataset(data.Dataset):
     def __init__(self, indices, input_length, mid, output_length, direc, stack_x):
@@ -32,7 +36,7 @@ class Dataset(data.Dataset):
             
         return x.float(), y.float()
 
-def train_epoch(train_loader, model, optimizer, loss_function, coef=0, regularizer=None):
+def train_epoch(train_loader, model, optimizer, loss_function, coef=0, regularizer=None, update_disc = None):
     # Train the model for one epoch
     train_mse = []
     for xx, yy in train_loader:
@@ -56,6 +60,8 @@ def train_epoch(train_loader, model, optimizer, loss_function, coef=0, regulariz
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+        if update_disc is not None:
+            update_disc()
     train_rmse = round(np.sqrt(np.mean(train_mse)), 5)
     return train_rmse
 
@@ -84,6 +90,7 @@ def eval_epoch(valid_loader, model, loss_function):
         preds = np.concatenate(preds, axis=0)  
         trues = np.concatenate(trues, axis=0)  
         valid_rmse = round(np.sqrt(np.mean(valid_mse)), 5)
+    torch.cuda.empty_cache()
     return valid_rmse, preds, trues
 
 
@@ -121,4 +128,5 @@ def test_epoch(test_loader, model, loss_function):
         valid_rmse = round(np.mean(valid_mse), 5)
         mse_curve = np.array(mse_curve).reshape(-1, 60)
         rmse_curve = np.sqrt(np.mean(mse_curve, axis=0))
+    torch.cuda.empty_cache()
     return preds, trues, rmse_curve
