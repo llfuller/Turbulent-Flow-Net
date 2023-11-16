@@ -24,7 +24,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import radialProfile
-import kornia
+# import kornia
 # from torch.utils import data
 
 a_list = [ 291.7047045,   406.81669102,  514.73942872,  615.0306772,   707.77128018,
@@ -156,7 +156,7 @@ def TKE_mean(tensor):
  return tke_mean
 
 
-print(f"Shape of test_preds_loaded: {test_preds_loaded.shape}") # (35, 60, 2, 64, 64) = (t,
+print(f"Shape of test_preds_loaded: {test_preds_loaded.shape}") # (35, 60, 2, 64, 64) = (?,t,u or v, h,w)
 # ValueError: cannot reshape array of size 491520 into shape (7,60,2,64,64)
 # (t, b??, v_x or v_y, h, w) TODO: Check to see whether using only times up to 7 is valid, since plot looks slightly different
 tkes = [TKE_mean(test_preds_loaded[:7])]
@@ -209,33 +209,55 @@ ani.save('animation_truth_V.gif', writer='ffmpeg', fps=5)
 plt.close(fig)  # Close the figure to prevent it from displaying statically
 
 
-# Divergence stuff
-def divergence(preds):
- # preds: batch_size*output_steps*2*H*W
- preds_u = preds[:, :, 0]
- preds_v = preds[:, :, 1]
- u = torch.from_numpy(preds_u).float().to(device)
- v = torch.from_numpy(preds_v).float().to(device)
- # Sobolev gradients
- field_grad = kornia.filters.SpatialGradient()
- u_x = field_grad(u)[:, :, 0]
- v_y = field_grad(v)[:, :, 1]
- div = np.mean(np.abs((v_y + u_x).cpu().data.numpy()), axis=(0, 2, 3))
- return div
+# # Divergence stuff
+# def divergence(preds):
+#  # preds: batch_size*output_steps*2*H*W
+#  preds_u = preds[:, :, 0]
+#  preds_v = preds[:, :, 1]
+#  u = torch.from_numpy(preds_u).float().to(device)
+#  v = torch.from_numpy(preds_v).float().to(device)
+#  # Sobolev gradients
+#  field_grad = kornia.filters.SpatialGradient()
+#  u_x = field_grad(u)[:, :, 0]
+#  v_y = field_grad(v)[:, :, 1]
+#  div = np.mean(np.abs((v_y + u_x).cpu().data.numpy()), axis=(0, 2, 3))
+#  return div
+#
 
-
-dhpm_preds = np.expand_dims(dhpm["preds"].transpose(1,0,2,3), axis = 0)
-divs = [divergence(preds[i]) for i in range(9)]
-linestyles = ['-', '--', '-.', ':','-.', '--', '-.', ':','-.','--']
-fig=plt.figure(figsize=(8, 8))
-idx = np.array(list(range(0,60,4)))
-plt.plot(idx+1, divs[i][idx], label = title[i], linewidth = 2, linestyle=':')
-plt.plot(idx+1, divs[0][idx], label = title[0], linewidth = 2, linestyle=linestyles[0], color = 'k')
-
-plt.ylabel("Mean Absolute Divergence", size = 18)
-plt.xlabel("Predition Step", size = 18)
-plt.legend(fontsize=11)
+fig=plt.figure()
+plt.plot(div_curve_loaded, linewidth = 2, linestyle=':')
+plt.title("Mean Absolute Divergence of Test Prediction", size = 18)
+plt.xlabel("Prediction Step", size = 18)
 plt.xticks(fontsize=14)
 plt.yticks(fontsize=14)
-plt.savefig("divergence.png", dpi = 400, bbox_inches = 'tight')
+plt.savefig("TFNet_divergence_test_pred", dpi=500, bbox_inches='tight')
 plt.show()
+
+
+def inverse_seqs(tensor):
+ tensor = tensor.reshape(-1, 7, 60, 2, 64, 64)
+ tensor = tensor.transpose(0, 2, 3, 1, 4, 5)
+ tensor = tensor.transpose(0, 1, 2, 4, 3, 5).reshape(-1, 60, 2, 64, 448)
+ tensor = tensor[:, :, :, :, :64]
+ tensor = tensor.transpose(0, 2, 1, 3, 4)
+ return tensor
+
+
+fig = plt.figure()
+temp_preds = test_preds_loaded[:,:,:,:,:]
+spec_mean, spec_stds = spectrum_band(temp_preds)
+print(f"spec_mean.shape:{spec_mean.shape}")
+print(f"spec_stds.shape:{spec_stds.shape}")
+x_idx = np.array(list(range(0, len(spec_mean))))
+plt.plot(x_idx, spec_mean[x_idx], label=title[0], linewidth=2.5, color="k")
+plt.xticks(fontsize=14)
+plt.yticks(fontsize=14)
+
+plt.yscale("log")
+plt.xscale("log")
+
+plt.legend(fontsize=14, loc=1)
+plt.ylabel("Energy Spectrum", size=18)
+plt.xlabel("Wave Number", size=18)
+plt.ylim(10e11, )
+plt.savefig("spec_ci_entire.png", dpi=400, bbox_inches='tight')
