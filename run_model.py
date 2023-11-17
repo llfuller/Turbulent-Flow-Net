@@ -17,6 +17,7 @@ import os
 # import models.baselines.DHPM
 from functools import partial
 from neuralop.models import FNO
+import os
 
 
 from utils import Dataset, train_epoch, eval_epoch, test_epoch, divergence, spectrum_band, update_train_util_device
@@ -43,9 +44,6 @@ if __name__ == '__main__':
 
     freeze_support()  # Needed when freezing to create a standalone executable
 
-    train_direc = "rbc_data/sample_"
-    test_direc = "rbc_data/sample_"
-
     parser = argparse.ArgumentParser(description='Tuburlent-Flow Nets')
     parser.add_argument('--kernel_size', type=int, required=False, default="3", help='convolution kernel size')
     parser.add_argument('--time_range', type=int, required=False, default="6", help='moving average window size for temporal filter')
@@ -61,9 +59,12 @@ if __name__ == '__main__':
     parser.add_argument('--seed', type=int, required=False, default="0", help='random seed')
     parser.add_argument('--d_id', type=int, required=False, default="0", help='device id')
     parser.add_argument('--model', type=str, required=False, default="tf", help='model to run')
-    parser.add_argument('--data', type=str, required=False, default="rbc_data", help='data to run')
+    parser.add_argument('--data', type=str, required=False, default="data21_101", help='data to run')
     
     args = parser.parse_args()
+
+    train_direc = f"{args.data}/sample_"
+    test_direc = f"{args.data}/sample_"
 
     device=torch.device(f"cuda:{args.d_id}" if torch.cuda.is_available() else "cpu")
     update_train_util_device(device)
@@ -115,7 +116,8 @@ if __name__ == '__main__':
         decay_rate = args.decay_rate
         inp_dim = args.inp_dim
 
-        model_name = "assets/{}_{}_seed{}_bz{}_inp{}_pred{}_lr{}_decay{}_coef{}_dropout{}_kernel{}_win{}".format(args.data,
+        os.makedirs("assets_" + args.data, exist_ok=True)
+        model_name = "assets_{}/{}_{}_seed{}_bz{}_inp{}_pred{}_lr{}_decay{}_coef{}_dropout{}_kernel{}_win{}".format(args.data, args.data,
                                                                                                         model_str,
                                                                                                         args.seed,
                                                                                                         batch_size,
@@ -311,6 +313,12 @@ if __name__ == '__main__':
         if args.data == 'rbc_data':
             mean_vec = np.array([-1.6010, 0.0046]).reshape(1, 1, 2, 1, 1)
             norm_std = 2321.9727
+        elif args.data == 'data9_101':
+            mean_vec = np.array([0.0, 0.0]).reshape(1, 1, 2, 1, 1)
+            norm_std = 1.8061
+        elif args.data == 'data21_101':
+            mean_vec = np.array([0.0, 0.0]).reshape(1, 1, 2, 1, 1)
+            norm_std = 2.7431
         else:
             raise ValueError("No such dataset")
         test_preds = test_preds * norm_std + mean_vec
