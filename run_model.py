@@ -13,6 +13,7 @@ from models.baselines import DHPM, ResNet, Unet  # Assuming the class is named U
 from models.baselines import ConvLSTM
 from models.baselines import ResNetMini
 from models.baselines import GAN
+import os
 # import models.baselines.DHPM
 
 
@@ -41,10 +42,6 @@ if __name__ == '__main__':
     freeze_support()  # Needed when freezing to create a standalone executable
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-
-    train_direc = "rbc_data/sample_"
-    test_direc = "rbc_data/sample_"
-
     parser = argparse.ArgumentParser(description='Tuburlent-Flow Nets')
     parser.add_argument('--kernel_size', type=int, required=False, default="3", help='convolution kernel size')
     parser.add_argument('--time_range', type=int, required=False, default="6", help='moving average window size for temporal filter')
@@ -59,7 +56,8 @@ if __name__ == '__main__':
     parser.add_argument('--inp_dim', type=int, required=False, default="2", help='number of channels per frames')
     parser.add_argument('--seed', type=int, required=False, default="0", help='random seed')
     parser.add_argument('--model', type=str, required=False, default="tf", help='model to run')
-    
+    parser.add_argument('--data', type=str, required=False, default="rbc_data", help='dataset to train/test')
+
     args = parser.parse_args()
 # plt.plot(idx+1, tf_con['loss_curve'][idx]*stds, label = "Con TF-net", marker=markers[1], linewidth = 1.5, color = colors[1])
 # plt.plot(idx+1,  tf['loss_curve'][idx]*stds, label = "TF-net", marker=markers[2], linewidth = 3, color = colors[2])
@@ -69,6 +67,28 @@ if __name__ == '__main__':
 # plt.plot(idx+1, convlstm['loss_curve'][idx]*stds, label = "ConvLSTM", marker= markers[6], linewidth = 1.5, color = colors[6])
 # plt.plot(idx+1, sst['loss_curve'][idx]*stds, label = "SST", marker= markers[7], linewidth = 1.5, color = colors[7])
 # plt.plot(idx+1, dhpm['loss_curve'][idx]*stds, label = "DHPM", marker=markers[8], linewidth = 1.5, color = colors[8])
+
+    # Training/testing data
+    if args.data == 'rbc_data':
+        train_direc = "rbc_data/sample_"
+        test_direc = "rbc_data/sample_"
+        save_direc = "results_rbc_data/"
+    elif args.data == 'data9_101':
+        train_direc = "data9_101/sample_"
+        test_direc = "data9_101/sample_"
+        save_direc = "results_data9_101/"
+    elif args.data == 'data21_101':
+        train_direc = "data21_101/sample_"
+        test_direc = "data21_101/sample_"
+        save_direc = "results_data21_101/"
+    elif args.data == 'data20_101':
+        train_direc = "data20_101/sample_"
+        test_direc = "data20_101/sample_"
+        save_direc = "results_data20_101/"
+    else:
+        raise ValueError("No such dataset")
+
+
     model_dict = {"tf":TFNet,
                   "u":Unet.U_net, 
                   "gan":None, 
@@ -240,20 +260,42 @@ if __name__ == '__main__':
         # Denormalization: Optional
         mean_vec = np.array([-1.6010, 0.0046]).reshape(1, 1, 2, 1, 1)
         norm_std = 2321.9727
+
+        # Denormalization: Optional
+        if args.data == 'rbc_data':
+            mean_vec = np.array([-1.6010, 0.0046]).reshape(1, 1, 2, 1, 1)
+            norm_std = 2321.9727
+        elif args.data == 'data9_101':
+            mean_vec = np.array([0.0, 0.0]).reshape(1, 1, 2, 1, 1)
+            norm_std = 1.8061
+        elif args.data == 'data21_101':
+            mean_vec = np.array([0.0, 0.0]).reshape(1, 1, 2, 1, 1)
+            norm_std = 2.7431
+        elif args.data == 'data20_101':
+            mean_vec = np.array([0.0, 0.0]).reshape(1, 1, 2, 1, 1)
+            norm_std = 2.5912
+        else:
+            raise ValueError("No such dataset")
+
         test_preds = test_preds * norm_std + mean_vec
         test_trues = test_trues * norm_std + mean_vec
+
 
         # Compute evaluation scores
         rmse_curve = np.sqrt(np.mean((test_preds - test_trues)**2, axis = (0,2,3,4)))
         div_curve = divergence(test_preds)
         energy_spectrum = spectrum_band(test_preds)
 
+        # Check if the save directory exists, and create it if it does not
+        if not os.path.exists(save_direc):
+            os.makedirs(save_direc)
+
         torch.save({"test_preds": test_preds[::60],
                     "test_trues": test_trues[::60],
                     "rmse_curve": rmse_curve,
                     "div_curve": div_curve,
                     "spectrum": energy_spectrum},
-                    model_name + "pt")
+                    save_direc+model_name + "_data="+args.data + "_seed="+ str(args.seed) +"pt")
                 
         # torch.save({"test_preds": test_preds[::60],
         #     "test_trues": test_trues[::60],
@@ -268,6 +310,15 @@ if __name__ == '__main__':
             'train_rmse': train_rmse,
             'valid_rmse': valid_rmse,
             # any other states or tensors you want to save
-        }, f"{model_name}_complete_model.pth")
+        }, f"{save_direc}{model_name}_data{args.data}_seed{str(args.seed)}_complete_model.pth")
 
-        np.save(f"{model_name}_loss_curve.npy", rmse_curve)
+        np.save(f"{save_direc}{model_name}_data{args.data}_seed{str(args.seed)}_loss_curve.npy", rmse_curve)
+
+
+        # save comand line args used
+        arg_string = ""
+        for arg in vars(args):
+            value = getattr(args, arg)
+            arg_string += f" --{arg} {value}"
+        with open(save_direc+f"terminal_commands_data{args.data}_seed{str(args.seed)}.txt", 'w') as file:
+            file.write(arg_string)
