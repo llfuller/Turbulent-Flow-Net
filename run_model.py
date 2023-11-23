@@ -310,9 +310,9 @@ if __name__ == '__main__':
             'train_rmse': train_rmse,
             'valid_rmse': valid_rmse,
             # any other states or tensors you want to save
-        }, f"{save_direc}{model_name}_data{args.data}_seed{str(args.seed)}_complete_model.pth")
+        }, f"{save_direc}{model_name}_data{args.data}_complete_model.pth")
 
-        np.save(f"{save_direc}{model_name}_data{args.data}_seed{str(args.seed)}_loss_curve.npy", rmse_curve)
+        np.save(f"{save_direc}{model_name}_data{args.data}_loss_curve.npy", rmse_curve)
 
 
         # save comand line args used
