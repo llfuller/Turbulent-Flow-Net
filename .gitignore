@@ -1,5 +1,7 @@
-
+assets*/
 *.pyc
 *.pt
 *.pth
 *.npy
+lakshya
+logs/

@@ -3,7 +3,10 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = None
+def update_device(run_model_device):
+    global device
+    device = run_model_device
 
 ##############################ResNett################################
 # 18-layer ResNet

@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+from einops import rearrange, repeat
     
     
 class ConvLSTMCell(nn.Module):
@@ -44,9 +44,9 @@ class ConvLSTMCell(nn.Module):
         
         return h_next, c_next
 
-    def init_hidden(self, batch_size):
-        return (Variable(torch.zeros(batch_size, self.hidden_dim, self.height, self.width)).cuda(),
-                Variable(torch.zeros(batch_size, self.hidden_dim, self.height, self.width)).cuda())
+    def init_hidden(self, batch_size, device):
+        return (Variable(torch.zeros(batch_size, self.hidden_dim, self.height, self.width)).to(device),
+                Variable(torch.zeros(batch_size, self.hidden_dim, self.height, self.width)).to(device))
 
 
 class ConvLSTM(nn.Module):
@@ -95,7 +95,7 @@ class ConvLSTM(nn.Module):
         if hidden_state is not None:
             raise NotImplementedError()
         else:
-            hidden_state = self._init_hidden(batch_size=input_tensor.size(0))
+            hidden_state = self._init_hidden(batch_size=input_tensor.size(0), device=input_tensor.device)
 
         last_state_list   = []
 
@@ -115,18 +115,17 @@ class ConvLSTM(nn.Module):
 
             layer_output = torch.stack(output_inner, dim=1)
             cur_layer_input = layer_output
- 
-            last_state_list.append([h, c])
-
-        if not self.return_all_layers:
-            last_state_list   = last_state_list[-1:]
+            if self.return_all_layers:
+                last_state_list.append([h, c])
+            else:
+                last_state_list = [[h, c]]
 
         return last_state_list
 
-    def _init_hidden(self, batch_size):
+    def _init_hidden(self, batch_size, device):
         init_states = []
         for i in range(self.num_layers):
-            init_states.append(self.cell_list[i].init_hidden(batch_size))
+            init_states.append(self.cell_list[i].init_hidden(batch_size, device))
         return init_states
 
     @staticmethod
@@ -142,7 +141,7 @@ class ConvLSTM(nn.Module):
         return param
     
 class CLSTM(nn.Module):
-    def __init__(self, input_size=(64, 64), channels=1, hidden_dim = [64], num_layers=1):
+    def __init__(self, input_size=(64, 64), channels=1, out_channels=2, hidden_dim = [16], num_layers=1):
         super(CLSTM, self).__init__()
         self.clstm= ConvLSTM(input_size=input_size,
                          input_dim = channels,
@@ -153,10 +152,11 @@ class CLSTM(nn.Module):
                          bias = True,
                          return_all_layers=False)
         
-        self.output_layer = nn.Conv2d(in_channels = hidden_dim[-1], out_channels = channels,
+        self.output_layer = nn.Conv2d(in_channels = hidden_dim[-1], out_channels = out_channels,
                                 kernel_size = 3, padding = 1)
         
     def forward(self, xx):
+        xx = rearrange(xx, "b t h w -> b t 1 h w")
         out = self.clstm(xx)[0][0]
         out = self.output_layer(out)
         return out 

@@ -6,8 +6,15 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch import autograd 
 from torch.autograd import Variable
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+from einops import rearrange    
+device = None
 
+def update_device(run_model_device):
+    global device
+    device = run_model_device
+    print("DHPM device updated to", device)
+
+# set input_length=1
 class NN(nn.Module):
     def __init__(self, hidden_dim, input_dim, output_dim, num_layers):
         super(NN, self).__init__()
@@ -29,7 +36,7 @@ class NN(nn.Module):
         return out
     
 class DHPM(nn.Module):
-    def __init__(self, hidden_dim = [200,200], num_layers = [3,3]):
+    def __init__(self, hidden_dim = [10,10], num_layers = [3,3]):
         super(DHPM, self).__init__()
         self.NN_u = NN(hidden_dim = hidden_dim[0], input_dim = 3, output_dim = 1, 
                        num_layers = num_layers[0]).to(device)
@@ -41,6 +48,8 @@ class DHPM(nn.Module):
                        num_layers = num_layers[1]).to(device)
         
     def forward(self, inputs, test = False):
+        b,c,h,w = inputs.shape
+        inputs = rearrange(inputs, 'b c h w -> (b h w) c')
         inp_x = Variable(inputs[:,:1], requires_grad=True).to(device)
         inp_y = Variable(inputs[:,1:2], requires_grad=True).to(device)
         inp_t = Variable(inputs[:,-1:], requires_grad=True).to(device)
@@ -49,8 +58,8 @@ class DHPM(nn.Module):
         v = self.NN_v(torch.cat([inp_x, inp_y, inp_t], dim = 1).to(device))
         
         
-        if test:
-            return u, v
+        if test or u.requires_grad == False or v.requires_grad == False:
+            return rearrange(torch.cat([u, v], dim=1), "(b h w) c -> b c h w", b = b, h = h, w = w)
         
         u_x = autograd.grad(outputs=u, inputs=inp_x, 
                             grad_outputs=torch.ones(u.size()).to(device),
@@ -86,7 +95,8 @@ class DHPM(nn.Module):
                             create_graph=True)[0]
         
         f = self.NN_f(torch.cat([u, v, u_t, v_t, u_x, u_xx, u_y, u_yy, v_x, v_xx, v_y, v_yy], dim = 1).to(device))
-        f_u = f[:,:1]
-        f_v = f[:,1:]
+        # f_u = f[:,:1]
+        # f_v = f[:,1:]
         
-        return u, v, u_t, v_t, u_x, u_xx, u_y, u_yy, v_x, v_xx, v_y, v_yy, f_u, f_v
+        # return u, v, u_t, v_t, u_x, u_xx, u_y, u_yy, v_x, v_xx, v_y, v_yy, f_u, f_v
+        return rearrange(f, "(b h w) c -> b c h w", b = b, h = h, w = w)
