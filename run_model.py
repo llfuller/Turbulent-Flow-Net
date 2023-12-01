@@ -245,8 +245,8 @@ if __name__ == '__main__':
             end = time.time()
 
             # Early stopping
-            if (len(train_rmse) > 100 and np.mean(valid_rmse[-5:]) >= np.mean(valid_rmse[-10:-5])):
-                    break
+            # if (len(train_rmse) > 100 and np.mean(valid_rmse[-5:]) >= np.mean(valid_rmse[-10:-5])):
+            #         break
 
             print("Epoch {} | T: {:0.2f} | Train RMSE: {:0.3f} | Valid RMSE: {:0.3f}".format(i+1, (end-start)/60, train_rmse[-1], valid_rmse[-1]))
             scheduler.step()
@@ -315,7 +315,7 @@ if __name__ == '__main__':
         np.save(f"{save_direc}{model_name}_data{args.data}_loss_curve.npy", rmse_curve)
 
 
-        # save comand line args used
+        # save command line args used
         arg_string = ""
         for arg in vars(args):
             value = getattr(args, arg)

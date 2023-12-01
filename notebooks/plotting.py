@@ -44,9 +44,8 @@ plt.plot(np.array(a_list))
 plt.show()
 
 import torch
-
 # Load the data
-loaded_data = torch.load("../tf_seed0_bz32_inp25_pred4_lr0.001_decay0.95_coef0.0_dropout0.0_kernel3_win6pt")
+loaded_data = torch.load("../results_rbc_data_0_1000_epochs/tf_seed0_bz64_inp26_pred6_lr0.005_decay0.9_coef0.001_dropout0.0_kernel3_win6_data=rbc_data_seed=0pt")
 # Access individual items
 test_preds_loaded = loaded_data['test_preds']
 test_trues_loaded = loaded_data['test_trues']
@@ -56,6 +55,7 @@ energy_spectrum_loaded = loaded_data['spectrum']
 
 print(f"rmse_curve_loaded.shape{rmse_curve_loaded.shape}")
 print(rmse_curve_loaded)
+print("here")
 
 plt.figure()
 plt.plot(np.array(rmse_curve_loaded))
@@ -64,8 +64,9 @@ plt.xlabel("RMSE")
 plt.xlabel("Prediction Step")
 plt.xticks(fontsize=14)
 plt.yticks(fontsize=14)
-plt.savefig("lawson_plots/rmse_curve_plot.png", dpi=300, bbox_inches='tight')
+plt.savefig("lawson_plots_1000_epochs/rmse_curve_plot.png", dpi=300, bbox_inches='tight')
 plt.show()
+print("here")
 
 
 def TKE(preds):
@@ -155,6 +156,7 @@ def TKE_mean(tensor):
  tke_mean = tke_mean / tensor.shape[0]
  return tke_mean
 
+dir = "lawson_plots_1000_epochs/"
 
 print(f"Shape of test_preds_loaded: {test_preds_loaded.shape}") # (35, 60, 2, 64, 64) = (?,t,u or v, h,w)
 # ValueError: cannot reshape array of size 491520 into shape (7,60,2,64,64)
@@ -172,41 +174,53 @@ for i in range(columns):
     plt.xlabel(title[i], size = 15, rotation=0, labelpad = -100)
     plt.xticks([])
     plt.yticks([])
-plt.savefig("Kinetic Energy.png", dpi = 400,bbox_inches = 'tight')
+plt.savefig(dir+"Kinetic Energy.png", dpi = 400,bbox_inches = 'tight')
 plt.show()
 
-# animate_this = test_preds_loaded[0,:,0,:,:] #(60,64,64)
-animate_this = test_trues_loaded[0,:,1,:,:] #(60,64,64)
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-
-# Your array (35, 64, 64)
-# animate_this = test_trues_loaded[:,0,0,:,:]
-
-# Define the figure and axis for the animation
-fig, ax = plt.subplots()
-
-# Set up the plot
-im = ax.imshow(animate_this[0], cmap='viridis', interpolation='none')
 
 # Initialization function: plot the background of each frame
 def init():
     im.set_data(np.zeros((64, 64)))
     return [im]
 
-# Animation update function: this is called sequentially
-def update(frame):
-    im.set_data(animate_this[frame])
-    return [im]
+def inverse_seqs(tensor):
+ tensor = tensor.reshape(-1, 7, 60, 2, 64, 64)
+ tensor = tensor.transpose(0, 2, 3, 1, 4, 5)
+ tensor = tensor.transpose(0, 1, 2, 4, 3, 5).reshape(-1, 60, 2, 64, 448)
+ tensor = tensor[:, :, :, :, :64]
+ tensor = tensor.transpose(0, 2, 1, 3, 4)
+ return tensor
 
-# Create the animation object
-ani = FuncAnimation(fig, update, frames=range(35), init_func=init, blit=True)
+animate_this_true_U = test_trues_loaded[0,:,0,:,:] #(60,64,64)
+animate_this_true_V = test_trues_loaded[0,:,1,:,:]
+animate_this_preds_U = test_preds_loaded[0,:,0,:,:]
+animate_this_preds_V = test_preds_loaded[0,:,1,:,:]
+animate_this_dict = {"truth_U":animate_this_true_U,
+                     "truth_V":animate_this_true_V,
+                     "preds_U":animate_this_preds_U,
+                     "preds_V":animate_this_preds_V}
 
-# Save the animation to a file
-ani.save('animation_truth_V.gif', writer='ffmpeg', fps=5)
+# Your array (35, 64, 64)
+# animate_this = test_trues_loaded[:,0,0,:,:]
 
-plt.close(fig)  # Close the figure to prevent it from displaying statically
+for data_name, data_to_animate in animate_this_dict.items():
+ # Animation update function: this is called sequentially
+ def update(frame):
+  im.set_data(data_to_animate[frame])
+  return [im]
+
+ # Define the figure and axis for the animation
+ fig, ax = plt.subplots()
+ # Set up the plot
+ im = ax.imshow(data_to_animate[0], cmap='viridis', interpolation='none')
+ # Create the animation object
+ ani = FuncAnimation(fig, update, frames=range(35), init_func=init, blit=True)
+ # Save the animation to a file
+ ani.save(dir+"animation_"+data_name+'.gif', writer='ffmpeg', fps=5)
+ plt.close(fig)  # Close the figure to prevent it from displaying statically
 
 
 # # Divergence stuff
@@ -230,17 +244,8 @@ plt.title("Mean Absolute Divergence of Test Prediction", size = 18)
 plt.xlabel("Prediction Step", size = 18)
 plt.xticks(fontsize=14)
 plt.yticks(fontsize=14)
-plt.savefig("TFNet_divergence_test_pred", dpi=500, bbox_inches='tight')
+plt.savefig(dir+"TFNet_divergence_test_pred", dpi=500, bbox_inches='tight')
 plt.show()
-
-
-def inverse_seqs(tensor):
- tensor = tensor.reshape(-1, 7, 60, 2, 64, 64)
- tensor = tensor.transpose(0, 2, 3, 1, 4, 5)
- tensor = tensor.transpose(0, 1, 2, 4, 3, 5).reshape(-1, 60, 2, 64, 448)
- tensor = tensor[:, :, :, :, :64]
- tensor = tensor.transpose(0, 2, 1, 3, 4)
- return tensor
 
 
 fig = plt.figure()
@@ -260,4 +265,4 @@ plt.legend(fontsize=14, loc=1)
 plt.ylabel("Energy Spectrum", size=18)
 plt.xlabel("Wave Number", size=18)
 plt.ylim(10e11, )
-plt.savefig("spec_ci_entire.png", dpi=400, bbox_inches='tight')
+plt.savefig(dir+"spec_ci_entire.png", dpi=400, bbox_inches='tight')
