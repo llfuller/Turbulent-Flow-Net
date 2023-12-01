@@ -1,0 +1,73 @@
+/data/lakshya/neuraloperator/neuralop/models/base_model.py:21: UserWarning: Creating a subclass of BaseModel FNO1d with no name, initializing with FNO1d.
+  warnings.warn(f'Creating a subclass of BaseModel {cls.__name__} with no name, initializing with {cls.__name__}.')
+/data/lakshya/neuraloperator/neuralop/models/base_model.py:21: UserWarning: Creating a subclass of BaseModel FNO2d with no name, initializing with FNO2d.
+  warnings.warn(f'Creating a subclass of BaseModel {cls.__name__} with no name, initializing with {cls.__name__}.')
+/data/lakshya/neuraloperator/neuralop/models/base_model.py:21: UserWarning: Creating a subclass of BaseModel FNO3d with no name, initializing with FNO3d.
+  warnings.warn(f'Creating a subclass of BaseModel {cls.__name__} with no name, initializing with {cls.__name__}.')
+/data/lakshya/neuraloperator/neuralop/models/base_model.py:21: UserWarning: Creating a subclass of BaseModel TFNO with no name, initializing with TFNO.
+  warnings.warn(f'Creating a subclass of BaseModel {cls.__name__} with no name, initializing with {cls.__name__}.')
+/data/lakshya/neuraloperator/neuralop/models/base_model.py:21: UserWarning: Creating a subclass of BaseModel TFNO1d with no name, initializing with TFNO1d.
+  warnings.warn(f'Creating a subclass of BaseModel {cls.__name__} with no name, initializing with {cls.__name__}.')
+/data/lakshya/neuraloperator/neuralop/models/base_model.py:21: UserWarning: Creating a subclass of BaseModel TFNO2d with no name, initializing with TFNO2d.
+  warnings.warn(f'Creating a subclass of BaseModel {cls.__name__} with no name, initializing with {cls.__name__}.')
+/data/lakshya/neuraloperator/neuralop/models/base_model.py:21: UserWarning: Creating a subclass of BaseModel TFNO3d with no name, initializing with TFNO3d.
+  warnings.warn(f'Creating a subclass of BaseModel {cls.__name__} with no name, initializing with {cls.__name__}.')
+/data/lakshya/neuraloperator/neuralop/models/base_model.py:21: UserWarning: Creating a subclass of BaseModel SFNO with no name, initializing with SFNO.
+  warnings.warn(f'Creating a subclass of BaseModel {cls.__name__} with no name, initializing with {cls.__name__}.')
+DHPM device updated to cuda:5
+Model Name:dhpm
+Model Class:<class 'models.baselines.DHPM.DHPM'>
+sample_x.shape:torch.Size([12, 64, 64])
+sample_y.shape:torch.Size([4, 2, 64, 64])
+sample_x[0].shape:torch.Size([64, 64])
+  0%|          | 0/50 [00:00<?, ?it/s]  2%|▏         | 1/50 [04:08<3:23:01, 248.61s/it]Epoch 1 | T: 4.14 | Train RMSE: 1.108 | Valid RMSE: 1.183
+  4%|▍         | 2/50 [08:08<3:14:42, 243.39s/it]Epoch 2 | T: 4.00 | Train RMSE: 1.094 | Valid RMSE: 1.196
+  6%|▌         | 3/50 [12:22<3:14:37, 248.45s/it]Epoch 3 | T: 4.24 | Train RMSE: 1.092 | Valid RMSE: 1.204
+  8%|▊         | 4/50 [16:26<3:09:04, 246.63s/it]Epoch 4 | T: 4.06 | Train RMSE: 1.091 | Valid RMSE: 1.199
+ 10%|█         | 5/50 [20:28<3:03:45, 245.00s/it]Epoch 5 | T: 4.04 | Train RMSE: 1.091 | Valid RMSE: 1.203
+ 12%|█▏        | 6/50 [24:45<3:02:32, 248.92s/it]Epoch 6 | T: 4.28 | Train RMSE: 1.090 | Valid RMSE: 1.201
+ 14%|█▍        | 7/50 [28:49<2:57:15, 247.33s/it]Epoch 7 | T: 4.07 | Train RMSE: 1.090 | Valid RMSE: 1.227
+ 16%|█▌        | 8/50 [33:35<3:01:53, 259.84s/it]Epoch 8 | T: 4.78 | Train RMSE: 1.090 | Valid RMSE: 1.221
+ 18%|█▊        | 9/50 [37:47<2:55:45, 257.21s/it]Epoch 9 | T: 4.19 | Train RMSE: 1.090 | Valid RMSE: 1.228
+ 20%|██        | 10/50 [41:28<2:44:03, 246.10s/it]Epoch 10 | T: 3.69 | Train RMSE: 1.090 | Valid RMSE: 1.219
+ 22%|██▏       | 11/50 [45:27<2:38:30, 243.87s/it]Epoch 11 | T: 3.98 | Train RMSE: 1.090 | Valid RMSE: 1.224
+ 24%|██▍       | 12/50 [49:24<2:33:05, 241.73s/it]Epoch 12 | T: 3.95 | Train RMSE: 1.089 | Valid RMSE: 1.238
+ 26%|██▌       | 13/50 [53:19<2:27:53, 239.84s/it]Epoch 13 | T: 3.92 | Train RMSE: 1.089 | Valid RMSE: 1.222
+ 28%|██▊       | 14/50 [59:08<2:43:40, 272.78s/it]Epoch 14 | T: 5.81 | Train RMSE: 1.089 | Valid RMSE: 1.226
+ 30%|███       | 15/50 [1:03:18<2:35:06, 265.91s/it]Epoch 15 | T: 4.17 | Train RMSE: 1.089 | Valid RMSE: 1.259
+ 32%|███▏      | 16/50 [1:07:11<2:25:04, 256.01s/it]Epoch 16 | T: 3.88 | Train RMSE: 1.089 | Valid RMSE: 1.251
+ 34%|███▍      | 17/50 [1:11:07<2:17:31, 250.06s/it]Epoch 17 | T: 3.94 | Train RMSE: 1.089 | Valid RMSE: 1.237
+ 36%|███▌      | 18/50 [1:15:15<2:12:59, 249.34s/it]Epoch 18 | T: 4.13 | Train RMSE: 1.089 | Valid RMSE: 1.239
+ 38%|███▊      | 19/50 [1:19:16<2:07:28, 246.72s/it]Epoch 19 | T: 4.01 | Train RMSE: 1.089 | Valid RMSE: 1.241
+ 40%|████      | 20/50 [1:23:40<2:05:58, 251.94s/it]Epoch 20 | T: 4.40 | Train RMSE: 1.089 | Valid RMSE: 1.251
+ 42%|████▏     | 21/50 [1:28:06<2:03:48, 256.15s/it]Epoch 21 | T: 4.43 | Train RMSE: 1.089 | Valid RMSE: 1.249
+ 44%|████▍     | 22/50 [1:32:05<1:57:06, 250.95s/it]Epoch 22 | T: 3.98 | Train RMSE: 1.089 | Valid RMSE: 1.240
+ 46%|████▌     | 23/50 [1:36:16<1:52:59, 251.09s/it]Epoch 23 | T: 4.19 | Train RMSE: 1.089 | Valid RMSE: 1.248
+ 48%|████▊     | 24/50 [1:40:12<1:46:52, 246.63s/it]Epoch 24 | T: 3.94 | Train RMSE: 1.088 | Valid RMSE: 1.241
+ 50%|█████     | 25/50 [1:44:18<1:42:41, 246.47s/it]Epoch 25 | T: 4.10 | Train RMSE: 1.088 | Valid RMSE: 1.221
+ 52%|█████▏    | 26/50 [1:48:23<1:38:22, 245.92s/it]Epoch 26 | T: 4.08 | Train RMSE: 1.089 | Valid RMSE: 1.244
+ 54%|█████▍    | 27/50 [1:54:07<1:45:33, 275.37s/it]Epoch 27 | T: 5.73 | Train RMSE: 1.088 | Valid RMSE: 1.242
+ 56%|█████▌    | 28/50 [1:58:06<1:36:58, 264.49s/it]Epoch 28 | T: 3.99 | Train RMSE: 1.088 | Valid RMSE: 1.253
+ 58%|█████▊    | 29/50 [2:02:05<1:29:54, 256.90s/it]Epoch 29 | T: 3.99 | Train RMSE: 1.088 | Valid RMSE: 1.239
+ 60%|██████    | 30/50 [2:05:56<1:23:02, 249.15s/it]Epoch 30 | T: 3.85 | Train RMSE: 1.088 | Valid RMSE: 1.242
+ 62%|██████▏   | 31/50 [2:10:13<1:19:37, 251.47s/it]Epoch 31 | T: 4.28 | Train RMSE: 1.088 | Valid RMSE: 1.231
+ 64%|██████▍   | 32/50 [2:14:08<1:13:57, 246.53s/it]Epoch 32 | T: 3.92 | Train RMSE: 1.088 | Valid RMSE: 1.239
+ 66%|██████▌   | 33/50 [2:18:01<1:08:38, 242.24s/it]Epoch 33 | T: 3.87 | Train RMSE: 1.088 | Valid RMSE: 1.249
+ 68%|██████▊   | 34/50 [2:21:53<1:03:50, 239.39s/it]Epoch 34 | T: 3.88 | Train RMSE: 1.088 | Valid RMSE: 1.257
+ 70%|███████   | 35/50 [2:25:54<59:57, 239.80s/it]  Epoch 35 | T: 4.01 | Train RMSE: 1.088 | Valid RMSE: 1.237
+ 72%|███████▏  | 36/50 [2:29:51<55:44, 238.89s/it]Epoch 36 | T: 3.95 | Train RMSE: 1.088 | Valid RMSE: 1.235
+ 74%|███████▍  | 37/50 [2:33:47<51:34, 238.00s/it]Epoch 37 | T: 3.93 | Train RMSE: 1.088 | Valid RMSE: 1.231
+ 76%|███████▌  | 38/50 [2:37:46<47:39, 238.32s/it]Epoch 38 | T: 3.98 | Train RMSE: 1.088 | Valid RMSE: 1.235
+ 78%|███████▊  | 39/50 [2:41:51<44:04, 240.44s/it]Epoch 39 | T: 4.09 | Train RMSE: 1.088 | Valid RMSE: 1.234
+ 80%|████████  | 40/50 [2:45:45<39:45, 238.57s/it]Epoch 40 | T: 3.90 | Train RMSE: 1.088 | Valid RMSE: 1.239
+ 82%|████████▏ | 41/50 [2:49:56<36:20, 242.30s/it]Epoch 41 | T: 4.18 | Train RMSE: 1.088 | Valid RMSE: 1.235
+ 84%|████████▍ | 42/50 [2:53:52<32:02, 240.26s/it]Epoch 42 | T: 3.92 | Train RMSE: 1.088 | Valid RMSE: 1.231
+ 86%|████████▌ | 43/50 [2:57:43<27:43, 237.58s/it]Epoch 43 | T: 3.86 | Train RMSE: 1.088 | Valid RMSE: 1.243
+ 88%|████████▊ | 44/50 [3:01:40<23:44, 237.44s/it]Epoch 44 | T: 3.95 | Train RMSE: 1.088 | Valid RMSE: 1.231
+ 90%|█████████ | 45/50 [3:06:51<21:37, 259.45s/it]Epoch 45 | T: 5.18 | Train RMSE: 1.088 | Valid RMSE: 1.225
+ 92%|█████████▏| 46/50 [3:11:12<17:19, 259.88s/it]Epoch 46 | T: 4.35 | Train RMSE: 1.088 | Valid RMSE: 1.230
+ 94%|█████████▍| 47/50 [3:15:14<12:43, 254.55s/it]Epoch 47 | T: 4.03 | Train RMSE: 1.088 | Valid RMSE: 1.233
+ 96%|█████████▌| 48/50 [3:19:09<08:17, 248.78s/it]Epoch 48 | T: 3.92 | Train RMSE: 1.088 | Valid RMSE: 1.235
+ 98%|█████████▊| 49/50 [3:23:19<04:09, 249.11s/it]Epoch 49 | T: 4.16 | Train RMSE: 1.088 | Valid RMSE: 1.235
+100%|██████████| 50/50 [3:27:18<00:00, 245.90s/it]100%|██████████| 50/50 [3:27:18<00:00, 248.76s/it]
+Epoch 50 | T: 3.97 | Train RMSE: 1.088 | Valid RMSE: 1.234

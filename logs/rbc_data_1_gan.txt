@@ -1,0 +1,183 @@
+/data/lakshya/neuraloperator/neuralop/models/base_model.py:21: UserWarning: Creating a subclass of BaseModel FNO1d with no name, initializing with FNO1d.
+  warnings.warn(f'Creating a subclass of BaseModel {cls.__name__} with no name, initializing with {cls.__name__}.')
+/data/lakshya/neuraloperator/neuralop/models/base_model.py:21: UserWarning: Creating a subclass of BaseModel FNO2d with no name, initializing with FNO2d.
+  warnings.warn(f'Creating a subclass of BaseModel {cls.__name__} with no name, initializing with {cls.__name__}.')
+/data/lakshya/neuraloperator/neuralop/models/base_model.py:21: UserWarning: Creating a subclass of BaseModel FNO3d with no name, initializing with FNO3d.
+  warnings.warn(f'Creating a subclass of BaseModel {cls.__name__} with no name, initializing with {cls.__name__}.')
+/data/lakshya/neuraloperator/neuralop/models/base_model.py:21: UserWarning: Creating a subclass of BaseModel TFNO with no name, initializing with TFNO.
+  warnings.warn(f'Creating a subclass of BaseModel {cls.__name__} with no name, initializing with {cls.__name__}.')
+/data/lakshya/neuraloperator/neuralop/models/base_model.py:21: UserWarning: Creating a subclass of BaseModel TFNO1d with no name, initializing with TFNO1d.
+  warnings.warn(f'Creating a subclass of BaseModel {cls.__name__} with no name, initializing with {cls.__name__}.')
+/data/lakshya/neuraloperator/neuralop/models/base_model.py:21: UserWarning: Creating a subclass of BaseModel TFNO2d with no name, initializing with TFNO2d.
+  warnings.warn(f'Creating a subclass of BaseModel {cls.__name__} with no name, initializing with {cls.__name__}.')
+/data/lakshya/neuraloperator/neuralop/models/base_model.py:21: UserWarning: Creating a subclass of BaseModel TFNO3d with no name, initializing with TFNO3d.
+  warnings.warn(f'Creating a subclass of BaseModel {cls.__name__} with no name, initializing with {cls.__name__}.')
+/data/lakshya/neuraloperator/neuralop/models/base_model.py:21: UserWarning: Creating a subclass of BaseModel SFNO with no name, initializing with SFNO.
+  warnings.warn(f'Creating a subclass of BaseModel {cls.__name__} with no name, initializing with {cls.__name__}.')
+DHPM device updated to cuda:3
+Model Name:gan
+Model Class:[<class 'models.baselines.Unet.U_net'>, <class 'models.baselines.GAN.Discriminator_Spatial'>]
+sample_x.shape:torch.Size([62, 64, 64])
+sample_y.shape:torch.Size([4, 2, 64, 64])
+sample_x[0].shape:torch.Size([64, 64])
+  0%|          | 0/80 [00:00<?, ?it/s]  1%|▏         | 1/80 [01:39<2:11:31, 99.89s/it]Epoch 1 | T: 1.66 | Train RMSE: 1.936 | Valid RMSE: 3.659
+ Disc loss: 0.235
+  2%|▎         | 2/80 [02:59<1:54:42, 88.24s/it]Epoch 2 | T: 1.33 | Train RMSE: 2.249 | Valid RMSE: 3.949
+ Disc loss: 0.166
+  4%|▍         | 3/80 [04:35<1:57:29, 91.55s/it]Epoch 3 | T: 1.59 | Train RMSE: 1.924 | Valid RMSE: 5.222
+ Disc loss: 0.284
+  5%|▌         | 4/80 [06:07<1:56:13, 91.76s/it]Epoch 4 | T: 1.53 | Train RMSE: 1.734 | Valid RMSE: 5.555
+ Disc loss: 0.315
+  6%|▋         | 5/80 [07:38<1:54:17, 91.43s/it]Epoch 5 | T: 1.51 | Train RMSE: 1.764 | Valid RMSE: 5.255
+ Disc loss: 0.315
+  8%|▊         | 6/80 [08:57<1:47:28, 87.14s/it]Epoch 6 | T: 1.31 | Train RMSE: 1.733 | Valid RMSE: 4.565
+ Disc loss: 0.323
+  9%|▉         | 7/80 [10:16<1:42:45, 84.46s/it]Epoch 7 | T: 1.32 | Train RMSE: 1.755 | Valid RMSE: 5.732
+ Disc loss: 0.332
+ 10%|█         | 8/80 [11:38<1:40:43, 83.94s/it]Epoch 8 | T: 1.38 | Train RMSE: 1.700 | Valid RMSE: 5.794
+ Disc loss: 0.332
+ 11%|█▏        | 9/80 [13:03<1:39:29, 84.08s/it]Epoch 9 | T: 1.41 | Train RMSE: 1.656 | Valid RMSE: 5.723
+ Disc loss: 0.363
+ 12%|█▎        | 10/80 [14:27<1:38:07, 84.10s/it]Epoch 10 | T: 1.40 | Train RMSE: 1.615 | Valid RMSE: 5.988
+ Disc loss: 0.371
+ 14%|█▍        | 11/80 [15:48<1:35:37, 83.16s/it]Epoch 11 | T: 1.35 | Train RMSE: 1.595 | Valid RMSE: 5.857
+ Disc loss: 0.366
+ 15%|█▌        | 12/80 [17:09<1:33:35, 82.59s/it]Epoch 12 | T: 1.35 | Train RMSE: 1.542 | Valid RMSE: 6.029
+ Disc loss: 0.389
+ 16%|█▋        | 13/80 [18:39<1:34:45, 84.85s/it]Epoch 13 | T: 1.50 | Train RMSE: 1.533 | Valid RMSE: 5.828
+ Disc loss: 0.376
+ 18%|█▊        | 14/80 [19:58<1:31:08, 82.86s/it]Epoch 14 | T: 1.30 | Train RMSE: 1.554 | Valid RMSE: 5.867
+ Disc loss: 0.388
+ 19%|█▉        | 15/80 [21:18<1:29:06, 82.26s/it]Epoch 15 | T: 1.35 | Train RMSE: 1.525 | Valid RMSE: 6.160
+ Disc loss: 0.402
+ 20%|██        | 16/80 [22:45<1:28:56, 83.39s/it]Epoch 16 | T: 1.43 | Train RMSE: 1.513 | Valid RMSE: 6.036
+ Disc loss: 0.396
+ 21%|██▏       | 17/80 [24:07<1:27:13, 83.07s/it]Epoch 17 | T: 1.37 | Train RMSE: 1.492 | Valid RMSE: 5.930
+ Disc loss: 0.401
+ 22%|██▎       | 18/80 [25:33<1:26:52, 84.07s/it]Epoch 18 | T: 1.44 | Train RMSE: 1.475 | Valid RMSE: 6.200
+ Disc loss: 0.410
+ 24%|██▍       | 19/80 [26:58<1:25:47, 84.38s/it]Epoch 19 | T: 1.42 | Train RMSE: 1.452 | Valid RMSE: 6.332
+ Disc loss: 0.395
+ 25%|██▌       | 20/80 [28:19<1:23:11, 83.19s/it]Epoch 20 | T: 1.34 | Train RMSE: 1.445 | Valid RMSE: 6.361
+ Disc loss: 0.429
+ 26%|██▋       | 21/80 [29:43<1:21:59, 83.38s/it]Epoch 21 | T: 1.40 | Train RMSE: 1.425 | Valid RMSE: 6.307
+ Disc loss: 0.409
+ 28%|██▊       | 22/80 [31:13<1:22:35, 85.44s/it]Epoch 22 | T: 1.50 | Train RMSE: 1.428 | Valid RMSE: 6.445
+ Disc loss: 0.396
+ 29%|██▉       | 23/80 [32:32<1:19:14, 83.42s/it]Epoch 23 | T: 1.31 | Train RMSE: 1.425 | Valid RMSE: 6.534
+ Disc loss: 0.406
+ 30%|███       | 24/80 [33:57<1:18:26, 84.05s/it]Epoch 24 | T: 1.43 | Train RMSE: 1.421 | Valid RMSE: 6.476
+ Disc loss: 0.409
+ 31%|███▏      | 25/80 [35:20<1:16:41, 83.66s/it]Epoch 25 | T: 1.38 | Train RMSE: 1.422 | Valid RMSE: 6.519
+ Disc loss: 0.405
+ 32%|███▎      | 26/80 [36:46<1:15:52, 84.31s/it]Epoch 26 | T: 1.43 | Train RMSE: 1.459 | Valid RMSE: 6.375
+ Disc loss: 0.384
+ 34%|███▍      | 27/80 [38:22<1:17:36, 87.86s/it]Epoch 27 | T: 1.60 | Train RMSE: 1.417 | Valid RMSE: 6.422
+ Disc loss: 0.395
+ 35%|███▌      | 28/80 [39:43<1:14:20, 85.79s/it]Epoch 28 | T: 1.35 | Train RMSE: 1.429 | Valid RMSE: 6.241
+ Disc loss: 0.394
+ 36%|███▋      | 29/80 [41:12<1:13:41, 86.69s/it]Epoch 29 | T: 1.48 | Train RMSE: 1.406 | Valid RMSE: 6.483
+ Disc loss: 0.402
+ 38%|███▊      | 30/80 [42:30<1:10:15, 84.31s/it]Epoch 30 | T: 1.31 | Train RMSE: 1.447 | Valid RMSE: 6.546
+ Disc loss: 0.390
+ 39%|███▉      | 31/80 [43:59<1:10:00, 85.73s/it]Epoch 31 | T: 1.48 | Train RMSE: 1.418 | Valid RMSE: 6.496
+ Disc loss: 0.400
+ 40%|████      | 32/80 [45:26<1:08:47, 86.00s/it]Epoch 32 | T: 1.44 | Train RMSE: 1.411 | Valid RMSE: 6.292
+ Disc loss: 0.387
+ 41%|████▏     | 33/80 [46:50<1:06:50, 85.33s/it]Epoch 33 | T: 1.40 | Train RMSE: 1.423 | Valid RMSE: 6.363
+ Disc loss: 0.386
+ 42%|████▎     | 34/80 [48:07<1:03:32, 82.87s/it]Epoch 34 | T: 1.29 | Train RMSE: 1.415 | Valid RMSE: 6.442
+ Disc loss: 0.385
+ 44%|████▍     | 35/80 [49:36<1:03:38, 84.86s/it]Epoch 35 | T: 1.49 | Train RMSE: 1.412 | Valid RMSE: 6.387
+ Disc loss: 0.389
+ 45%|████▌     | 36/80 [50:56<1:01:00, 83.19s/it]Epoch 36 | T: 1.32 | Train RMSE: 1.421 | Valid RMSE: 6.263
+ Disc loss: 0.386
+ 46%|████▋     | 37/80 [52:24<1:00:45, 84.79s/it]Epoch 37 | T: 1.48 | Train RMSE: 1.413 | Valid RMSE: 6.101
+ Disc loss: 0.386
+ 48%|████▊     | 38/80 [53:46<58:43, 83.89s/it]  Epoch 38 | T: 1.36 | Train RMSE: 1.399 | Valid RMSE: 6.093
+ Disc loss: 0.405
+ 49%|████▉     | 39/80 [55:06<56:37, 82.87s/it]Epoch 39 | T: 1.34 | Train RMSE: 1.352 | Valid RMSE: 6.126
+ Disc loss: 0.414
+ 50%|█████     | 40/80 [56:38<56:53, 85.34s/it]Epoch 40 | T: 1.52 | Train RMSE: 1.361 | Valid RMSE: 5.989
+ Disc loss: 0.402
+ 51%|█████▏    | 41/80 [57:56<54:05, 83.22s/it]Epoch 41 | T: 1.30 | Train RMSE: 1.377 | Valid RMSE: 6.083
+ Disc loss: 0.396
+ 52%|█████▎    | 42/80 [59:16<52:07, 82.31s/it]Epoch 42 | T: 1.34 | Train RMSE: 1.369 | Valid RMSE: 6.011
+ Disc loss: 0.394
+ 54%|█████▍    | 43/80 [1:00:44<51:45, 83.92s/it]Epoch 43 | T: 1.46 | Train RMSE: 1.397 | Valid RMSE: 5.928
+ Disc loss: 0.378
+ 55%|█████▌    | 44/80 [1:02:06<50:04, 83.47s/it]Epoch 44 | T: 1.37 | Train RMSE: 1.379 | Valid RMSE: 5.777
+ Disc loss: 0.393
+ 56%|█████▋    | 45/80 [1:03:34<49:29, 84.85s/it]Epoch 45 | T: 1.47 | Train RMSE: 1.353 | Valid RMSE: 5.597
+ Disc loss: 0.404
+ 57%|█████▊    | 46/80 [1:04:58<47:57, 84.62s/it]Epoch 46 | T: 1.40 | Train RMSE: 1.344 | Valid RMSE: 5.649
+ Disc loss: 0.404
+ 59%|█████▉    | 47/80 [1:06:23<46:29, 84.53s/it]Epoch 47 | T: 1.41 | Train RMSE: 1.347 | Valid RMSE: 5.704
+ Disc loss: 0.398
+ 60%|██████    | 48/80 [1:07:52<45:52, 86.01s/it]Epoch 48 | T: 1.49 | Train RMSE: 1.336 | Valid RMSE: 5.706
+ Disc loss: 0.397
+ 61%|██████▏   | 49/80 [1:09:20<44:41, 86.50s/it]Epoch 49 | T: 1.46 | Train RMSE: 1.340 | Valid RMSE: 5.562
+ Disc loss: 0.406
+ 62%|██████▎   | 50/80 [1:10:49<43:44, 87.48s/it]Epoch 50 | T: 1.50 | Train RMSE: 1.347 | Valid RMSE: 5.480
+ Disc loss: 0.398
+ 64%|██████▍   | 51/80 [1:12:09<41:08, 85.12s/it]Epoch 51 | T: 1.33 | Train RMSE: 1.344 | Valid RMSE: 5.317
+ Disc loss: 0.394
+ 65%|██████▌   | 52/80 [1:13:32<39:27, 84.55s/it]Epoch 52 | T: 1.39 | Train RMSE: 1.317 | Valid RMSE: 5.354
+ Disc loss: 0.408
+ 66%|██████▋   | 53/80 [1:15:05<39:06, 86.90s/it]Epoch 53 | T: 1.54 | Train RMSE: 1.318 | Valid RMSE: 5.376
+ Disc loss: 0.409
+ 68%|██████▊   | 54/80 [1:16:20<36:09, 83.46s/it]Epoch 54 | T: 1.26 | Train RMSE: 1.292 | Valid RMSE: 5.283
+ Disc loss: 0.424
+ 69%|██████▉   | 55/80 [1:17:40<34:19, 82.36s/it]Epoch 55 | T: 1.33 | Train RMSE: 1.328 | Valid RMSE: 5.239
+ Disc loss: 0.392
+ 70%|███████   | 56/80 [1:19:06<33:23, 83.48s/it]Epoch 56 | T: 1.43 | Train RMSE: 1.340 | Valid RMSE: 5.150
+ Disc loss: 0.392
+ 71%|███████▏  | 57/80 [1:20:28<31:51, 83.09s/it]Epoch 57 | T: 1.37 | Train RMSE: 1.306 | Valid RMSE: 5.141
+ Disc loss: 0.414
+ 72%|███████▎  | 58/80 [1:21:58<31:10, 85.02s/it]Epoch 58 | T: 1.49 | Train RMSE: 1.323 | Valid RMSE: 5.092
+ Disc loss: 0.398
+ 74%|███████▍  | 59/80 [1:23:17<29:07, 83.20s/it]Epoch 59 | T: 1.32 | Train RMSE: 1.329 | Valid RMSE: 5.042
+ Disc loss: 0.398
+ 75%|███████▌  | 60/80 [1:24:36<27:21, 82.09s/it]Epoch 60 | T: 1.33 | Train RMSE: 1.300 | Valid RMSE: 5.073
+ Disc loss: 0.408
+ 76%|███████▋  | 61/80 [1:26:00<26:09, 82.59s/it]Epoch 61 | T: 1.40 | Train RMSE: 1.302 | Valid RMSE: 5.057
+ Disc loss: 0.410
+ 78%|███████▊  | 62/80 [1:27:31<25:34, 85.23s/it]Epoch 62 | T: 1.52 | Train RMSE: 1.318 | Valid RMSE: 4.979
+ Disc loss: 0.407
+ 79%|███████▉  | 63/80 [1:29:07<25:02, 88.40s/it]Epoch 63 | T: 1.60 | Train RMSE: 1.308 | Valid RMSE: 4.923
+ Disc loss: 0.406
+ 80%|████████  | 64/80 [1:30:27<22:54, 85.90s/it]Epoch 64 | T: 1.33 | Train RMSE: 1.303 | Valid RMSE: 4.889
+ Disc loss: 0.403
+ 81%|████████▏ | 65/80 [1:31:50<21:15, 85.00s/it]Epoch 65 | T: 1.38 | Train RMSE: 1.315 | Valid RMSE: 4.877
+ Disc loss: 0.396
+ 82%|████████▎ | 66/80 [1:33:19<20:08, 86.33s/it]Epoch 66 | T: 1.49 | Train RMSE: 1.286 | Valid RMSE: 4.879
+ Disc loss: 0.412
+ 84%|████████▍ | 67/80 [1:34:44<18:35, 85.84s/it]Epoch 67 | T: 1.41 | Train RMSE: 1.278 | Valid RMSE: 4.881
+ Disc loss: 0.415
+ 85%|████████▌ | 68/80 [1:36:17<17:35, 87.96s/it]Epoch 68 | T: 1.55 | Train RMSE: 1.295 | Valid RMSE: 4.849
+ Disc loss: 0.403
+ 86%|████████▋ | 69/80 [1:37:40<15:50, 86.39s/it]Epoch 69 | T: 1.38 | Train RMSE: 1.316 | Valid RMSE: 4.793
+ Disc loss: 0.396
+ 88%|████████▊ | 70/80 [1:39:07<14:26, 86.66s/it]Epoch 70 | T: 1.45 | Train RMSE: 1.308 | Valid RMSE: 4.819
+ Disc loss: 0.401
+ 89%|████████▉ | 71/80 [1:40:38<13:11, 87.89s/it]Epoch 71 | T: 1.51 | Train RMSE: 1.311 | Valid RMSE: 4.871
+ Disc loss: 0.403
+ 90%|█████████ | 72/80 [1:42:00<11:30, 86.29s/it]Epoch 72 | T: 1.38 | Train RMSE: 1.316 | Valid RMSE: 4.836
+ Disc loss: 0.399
+ 91%|█████████▏| 73/80 [1:43:32<10:15, 87.95s/it]Epoch 73 | T: 1.53 | Train RMSE: 1.316 | Valid RMSE: 4.816
+ Disc loss: 0.405
+ 92%|█████████▎| 74/80 [1:45:02<08:51, 88.61s/it]Epoch 74 | T: 1.50 | Train RMSE: 1.310 | Valid RMSE: 4.786
+ Disc loss: 0.399
+ 94%|█████████▍| 75/80 [1:46:29<07:20, 88.02s/it]Epoch 75 | T: 1.44 | Train RMSE: 1.303 | Valid RMSE: 4.743
+ Disc loss: 0.402
+ 95%|█████████▌| 76/80 [1:47:59<05:53, 88.47s/it]Epoch 76 | T: 1.49 | Train RMSE: 1.304 | Valid RMSE: 4.730
+ Disc loss: 0.403
+ 96%|█████████▋| 77/80 [1:49:24<04:22, 87.54s/it]Epoch 77 | T: 1.42 | Train RMSE: 1.295 | Valid RMSE: 4.709
+ Disc loss: 0.407
+ 98%|█████████▊| 78/80 [1:50:51<02:54, 87.49s/it]Epoch 78 | T: 1.46 | Train RMSE: 1.284 | Valid RMSE: 4.712
+ Disc loss: 0.415
+ 99%|█████████▉| 79/80 [1:52:22<01:28, 88.55s/it]Epoch 79 | T: 1.52 | Train RMSE: 1.287 | Valid RMSE: 4.711
+ Disc loss: 0.411
+100%|██████████| 80/80 [1:53:46<00:00, 87.04s/it]100%|██████████| 80/80 [1:53:46<00:00, 85.33s/it]
+Epoch 80 | T: 1.39 | Train RMSE: 1.278 | Valid RMSE: 4.705
+ Disc loss: 0.418

@@ -50,7 +50,7 @@ if __name__ == '__main__':
     parser.add_argument('--output_length', type=int, required=False, default="4", help='number of prediction losses used for backpropagation')
     parser.add_argument('--input_length', type=int, required=False, default="26", help='input length')
     parser.add_argument('--batch_size', type=int, required=False, default="32", help='batch size')
-    parser.add_argument('--num_epoch', type=int, required=False, default="80", help='maximum number of epochs')
+    parser.add_argument('--num_epoch', type=int, required=False, default="50", help='maximum number of epochs')
     parser.add_argument('--learning_rate', type=float, required=False, default="0.0001", help='learning rate')
     parser.add_argument('--decay_rate', type=float, required=False, default="0.95", help='learning decay rate')
     parser.add_argument('--dropout_rate', type=float, required=False, default="0.0", help='dropout rate')
@@ -59,12 +59,13 @@ if __name__ == '__main__':
     parser.add_argument('--seed', type=int, required=False, default="0", help='random seed')
     parser.add_argument('--d_id', type=int, required=False, default="0", help='device id')
     parser.add_argument('--model', type=str, required=False, default="tf", help='model to run')
-    parser.add_argument('--data', type=str, required=False, default="data21_101", help='data to run')
+    parser.add_argument('--data', type=str, required=False, default="rbc_data", help='data to run')
     
     args = parser.parse_args()
 
     train_direc = f"{args.data}/sample_"
     test_direc = f"{args.data}/sample_"
+    save_direc = f""
 
     device=torch.device(f"cuda:{args.d_id}" if torch.cuda.is_available() else "cpu")
     update_train_util_device(device)
@@ -166,7 +167,7 @@ if __name__ == '__main__':
                                 kernel_size = kernel_size,
                                 dropout_rate = dropout_rate).to(device)
         elif model_str == 'resnet': # runs on home  PC, keep batch size <= 8
-            model = ResNet.ResNet(input_channels = 62,#input_length*inp_dim,#input_length*inp_dim,
+            model = ResNetMini.ResNet(input_channels = (input_length + time_range - 1)*inp_dim,#input_length*inp_dim,#input_length*inp_dim,
                                 output_channels = inp_dim,
                                 kernel_size = kernel_size).to(device)
         elif model_str == 'resnetmini': # runs on home  PC, keep batch size <= 8
@@ -319,6 +320,9 @@ if __name__ == '__main__':
         elif args.data == 'data21_101':
             mean_vec = np.array([0.0, 0.0]).reshape(1, 1, 2, 1, 1)
             norm_std = 2.7431
+        elif args.data == 'data20_101':
+            mean_vec = np.array([0.0, 0.0]).reshape(1, 1, 2, 1, 1)
+            norm_std = 2.5912
         else:
             raise ValueError("No such dataset")
         test_preds = test_preds * norm_std + mean_vec
