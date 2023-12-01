@@ -9,7 +9,7 @@ from torch.autograd import Variable
 from einops import rearrange    
 device = None
 
-def update_dhpm_device(run_model_device):
+def update_device(run_model_device):
     global device
     device = run_model_device
     print("DHPM device updated to", device)

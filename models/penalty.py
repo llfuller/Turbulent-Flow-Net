@@ -1,6 +1,9 @@
 import torch
 import numpy as np
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = None
+def update_device(run_model_device):
+    global device
+    device = run_model_device
 
 class DivergenceLoss(torch.nn.Module):
     def __init__(self, loss_fun):

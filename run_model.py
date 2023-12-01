@@ -7,6 +7,7 @@ from torch.utils import data
 import time
 import random
 from models import TFNet, DivergenceLoss
+from models import penalty
 from tqdm import trange
 # from models.baselines import ConvLSTM, DHPM, GAN, ResNet, SST, Unet  # Assuming the class is named Unet
 from models.baselines import DHPM, ResNet, Unet  # Assuming the class is named Unet
@@ -69,7 +70,9 @@ if __name__ == '__main__':
 
     device=torch.device(f"cuda:{args.d_id}" if torch.cuda.is_available() else "cpu")
     update_train_util_device(device)
-    DHPM.update_dhpm_device(device)
+    DHPM.update_device(device)
+    ResNetMini.update_device(device)
+    penalty.update_device(device)
 
     # plt.plot(idx+1, tf_con['loss_curve'][idx]*stds, label = "Con TF-net", marker=markers[1], linewidth = 1.5, color = colors[1])
     # plt.plot(idx+1,  tf['loss_curve'][idx]*stds, label = "TF-net", marker=markers[2], linewidth = 3, color = colors[2])
