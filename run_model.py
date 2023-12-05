@@ -66,7 +66,7 @@ if __name__ == '__main__':
 
     train_direc = f"{args.data}/sample_"
     test_direc = f"{args.data}/sample_"
-    save_direc = f""
+    save_direc = f"results_{args.data}/"
 
     device=torch.device(f"cuda:{args.d_id}" if torch.cuda.is_available() else "cpu")
     update_train_util_device(device)
@@ -121,7 +121,7 @@ if __name__ == '__main__':
         inp_dim = args.inp_dim
 
         os.makedirs("assets_" + args.data, exist_ok=True)
-        model_name = "assets_{}/{}_{}_seed{}_bz{}_inp{}_pred{}_lr{}_decay{}_coef{}_dropout{}_kernel{}_win{}".format(args.data, args.data,
+        model_name = "{}_{}_seed{}_bz{}_inp{}_pred{}_lr{}_decay{}_coef{}_dropout{}_kernel{}_win{}".format(args.data, 
                                                                                                         model_str,
                                                                                                         args.seed,
                                                                                                         batch_size,
@@ -346,7 +346,7 @@ if __name__ == '__main__':
                     "rmse_curve": rmse_curve,
                     "div_curve": div_curve,
                     "spectrum": energy_spectrum},
-                    save_direc+model_name + "_data="+args.data + "_seed="+ str(args.seed) +"pt")
+                    save_direc+model_name +"pt")
                 
         # torch.save({"test_preds": test_preds[::60],
         #     "test_trues": test_trues[::60],
@@ -361,9 +361,9 @@ if __name__ == '__main__':
             'train_rmse': train_rmse,
             'valid_rmse': valid_rmse,
             # any other states or tensors you want to save
-        }, f"{save_direc}{model_name}_data{args.data}_complete_model.pth")
+        }, f"{save_direc}{model_name}_complete_model.pth")
 
-        np.save(f"{save_direc}{model_name}_data{args.data}_loss_curve.npy", rmse_curve)
+        np.save(f"{save_direc}{model_name}_loss_curve.npy", rmse_curve)
 
 
         # save command line args used
