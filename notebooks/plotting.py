@@ -24,6 +24,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import radialProfile
+import os
 # import kornia
 # from torch.utils import data
 
@@ -41,12 +42,19 @@ a_list = [ 291.7047045,   406.81669102,  514.73942872,  615.0306772,   707.77128
  1911.79442716, 1928.09370652, 1945.03293867, 1962.59422154, 1980.85259922]
 plt.figure()
 plt.plot(np.array(a_list))
+plt.title("dummy plot")
 plt.show()
 
 import torch
 # Load the data
-loaded_data = torch.load("../results_rbc_data_0_1000_epochs/tf_seed0_bz64_inp26_pred6_lr0.005_decay0.9_coef0.001_dropout0.0_kernel3_win6_data=rbc_data_seed=0pt")
-# Access individual items
+# loaded_data = torch.load("../results_rbc_data_0_1000_epochs/tf_seed0_bz64_inp26_pred6_lr0.005_decay0.9_coef0.001_dropout0.0_kernel3_win6_data=rbc_data_seed=0pt")
+dir = "lawson_plots_1000_epochs/tfnet_multiscale/"
+# Check if the save directory exists, and create it if it does not
+if not os.path.exists(dir):
+ os.makedirs(dir)
+# loaded_data = torch.load("..results_rbc_data/rbc_data_tfnet_multiscale_seed0_bz64_inp26_pred6_lr0.005_decay0.9_coef0.001_dropout0.0_kernel7_win10pt")
+loaded_data = torch.load("../1000_epochs/results_rbc_data/rbc_data_tfnet_multiscale_seed0_bz64_inp26_pred6_lr0.005_decay0.9_coef0.001_dropout0.0_kernel7_win10pt")
+# loaded_data = torch.load("../100_epochs/results_rbc_data/rbc_data_tf_seed0_bz64_inp26_pred6_lr0.005_decay0.9_coef0.001_dropout0.0_kernel3_win6pt")# Access individual items
 test_preds_loaded = loaded_data['test_preds']
 test_trues_loaded = loaded_data['test_trues']
 rmse_curve_loaded = loaded_data['rmse_curve']
@@ -59,12 +67,12 @@ print("here")
 
 plt.figure()
 plt.plot(np.array(rmse_curve_loaded))
-plt.title("RMSE of TFNet")
+plt.title("RMSE of TFNet_multiscale")
 plt.xlabel("RMSE")
 plt.xlabel("Prediction Step")
 plt.xticks(fontsize=14)
 plt.yticks(fontsize=14)
-plt.savefig("lawson_plots_1000_epochs/rmse_curve_plot.png", dpi=300, bbox_inches='tight')
+plt.savefig(dir+"rmse_curve_plot.png", dpi=300, bbox_inches='tight')
 plt.show()
 print("here")
 
@@ -156,8 +164,6 @@ def TKE_mean(tensor):
  tke_mean = tke_mean / tensor.shape[0]
  return tke_mean
 
-dir = "lawson_plots_1000_epochs/"
-
 print(f"Shape of test_preds_loaded: {test_preds_loaded.shape}") # (35, 60, 2, 64, 64) = (?,t,u or v, h,w)
 # ValueError: cannot reshape array of size 491520 into shape (7,60,2,64,64)
 # (t, b??, v_x or v_y, h, w) TODO: Check to see whether using only times up to 7 is valid, since plot looks slightly different
@@ -244,7 +250,7 @@ plt.title("Mean Absolute Divergence of Test Prediction", size = 18)
 plt.xlabel("Prediction Step", size = 18)
 plt.xticks(fontsize=14)
 plt.yticks(fontsize=14)
-plt.savefig(dir+"TFNet_divergence_test_pred", dpi=500, bbox_inches='tight')
+plt.savefig(dir+"TFNet_multiscale_divergence_test_pred", dpi=500, bbox_inches='tight')
 plt.show()
 
 

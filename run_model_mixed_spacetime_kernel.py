@@ -6,7 +6,7 @@ import argparse
 from torch.utils import data
 import time
 import random
-from models import TFNet, DivergenceLoss
+from models import spacetime_kernel_net, DivergenceLoss
 from models import penalty
 from tqdm import trange
 # from models.baselines import ConvLSTM, DHPM, GAN, ResNet, SST, Unet  # Assuming the class is named Unet
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     parser.add_argument('--inp_dim', type=int, required=False, default="2", help='number of channels per frames')
     parser.add_argument('--seed', type=int, required=False, default="0", help='random seed')
     parser.add_argument('--d_id', type=int, required=False, default="0", help='device id')
-    parser.add_argument('--model', type=str, required=False, default="tf", help='model to run')
+    parser.add_argument('--model', type=str, required=False, default="spacetime_kernel_net", help='model to run')
     parser.add_argument('--data', type=str, required=False, default="rbc_data", help='data to run')
     
     args = parser.parse_args()
@@ -82,15 +82,16 @@ if __name__ == '__main__':
     # plt.plot(idx+1, convlstm['loss_curve'][idx]*stds, label = "ConvLSTM", marker= markers[6], linewidth = 1.5, color = colors[6])
     # plt.plot(idx+1, sst['loss_curve'][idx]*stds, label = "SST", marker= markers[7], linewidth = 1.5, color = colors[7])
     # plt.plot(idx+1, dhpm['loss_curve'][idx]*stds, label = "DHPM", marker=markers[8], linewidth = 1.5, color = colors[8])
-    model_dict = {"tf":TFNet,
-                  "u":Unet.U_net, 
-                  "gan":[Unet.U_net, GAN.Discriminator_Spatial],  
-                  "convlstm":ConvLSTM.CLSTM, 
-                  "fno": FNO,
-                  "sst":None, 
-                  "dhpm":DHPM.DHPM, 
-                "resnet":ResNet.ResNet,
-                "resnetmini":ResNetMini.ResNet
+    model_dict = {"st_mix":spacetime_kernel_net.spacetime_kernel_net,
+                #   "tf":TFNet,
+                #   "u":Unet.U_net, 
+                #   "gan":[Unet.U_net, GAN.Discriminator_Spatial],  
+                #   "convlstm":ConvLSTM.CLSTM, 
+                #   "fno": FNO,
+                #   "sst":None, 
+                #   "dhpm":DHPM.DHPM, 
+                # "resnet":ResNet.ResNet,
+                # "resnetmini":ResNetMini.ResNet
                 }
     model_dict = {args.model: model_dict[args.model]}
 
@@ -155,93 +156,14 @@ if __name__ == '__main__':
         print(f"sample_y.shape:{sample_y.shape}")
         print(f"sample_x[0].shape:{sample_x[0].shape}")
 
-        if model_str == 'tf': # runs fine on home PC, RMSE greater than expected
-            model = TFNet(input_channels = input_length*inp_dim,
+        if model_str == 'st_mix':
+            model = spacetime_kernel_net.spacetime_kernel_net(input_channels = input_length*inp_dim,
                         output_channels = inp_dim,
                         kernel_size = kernel_size,
                         dropout_rate = dropout_rate,
                         time_range = time_range).to(device)
-        if model_str == 'fno': # runs fine on home PC, RMSE greater than expected
-            model = model_class(n_modes=(64, 64), hidden_channels=64,
-                in_channels=(input_length + time_range - 1)*inp_dim, out_channels=2).to(device)
-        elif model_str == 'u':
-            model = model_class(input_channels = (input_length + time_range - 1)*inp_dim,
-                                output_channels = inp_dim,
-                                kernel_size = kernel_size,
-                                dropout_rate = dropout_rate).to(device)
-        elif model_str == 'resnet': # runs on home  PC, keep batch size <= 8
-            model = ResNetMini.ResNet(input_channels = (input_length + time_range - 1)*inp_dim,#input_length*inp_dim,#input_length*inp_dim,
-                                output_channels = inp_dim,
-                                kernel_size = kernel_size).to(device)
-        elif model_str == 'resnetmini': # runs on home  PC, keep batch size <= 8
-            model = ResNetMini.ResNet(input_channels = 62,#input_length*inp_dim,#input_length*inp_dim,
-                                output_channels = inp_dim,
-                                kernel_size = kernel_size).to(device)
-                                # python run_model.py --time_range=6 --output_length=6 --input_length=26 --batch_size=2 --learning_rate=0.005 --decay_rate=0.9 --coef=0.001 --seed=0 --model=resnetmini
-
-        elif model_str == 'convlstm':
-            model = ConvLSTM.CLSTM(input_size = sample_x[0].shape,#input_length*inp_dim,#input_length*inp_dim
-                                   ).to(device)
-
-        elif model_str == 'dhpm':
-            model = model_class(hidden_dim = [200,200], 
-                                num_layers = [3,3]).to(device)
-        elif model_str == 'gan':
-            model = model_class[0](input_channels = (input_length + time_range - 1)*inp_dim,
-                                output_channels = inp_dim,
-                                kernel_size = kernel_size,
-                                dropout_rate = dropout_rate).to(device)
-            discriminator = model_class[1](input_channels = inp_dim).to(device).train()
-            disc_optimizer = torch.optim.Adam(discriminator.parameters(), learning_rate)
-            disc_scheduler = torch.optim.lr_scheduler.StepLR(disc_optimizer, step_size = 1, gamma = decay_rate)
-            bce_loss = nn.BCELoss()
-            mse_loss = torch.nn.MSELoss()
-            d_loss = torch.tensor([0], requires_grad=True, dtype=torch.float32).to(device)
-            d_loss_cum = []
-            current_epoch = 0
-            warmup=0
-
-            def gan_loss(preds, trues):
-                if current_epoch < warmup:
-                    return mse_loss(preds, trues)
-                global bce_loss, discriminator, d_loss, d_loss_cum
-                real = torch.autograd.Variable(torch.Tensor(preds.shape[0], 1).fill_(1.0), requires_grad=False).to(device)
-                fake = torch.autograd.Variable(torch.Tensor(preds.shape[0], 1).fill_(0.0), requires_grad=False).to(device)
-
-                g_loss = bce_loss(discriminator(preds), real)
-
-                real_loss = bce_loss(discriminator(trues), real)
-                fake_loss = bce_loss(discriminator(preds.detach()), fake)
-
-                d_loss += (real_loss + fake_loss) / 2
-                d_loss_cum.append(d_loss.item() / args.output_length)
-                return g_loss
-            
-            def update_disc():
-                global d_loss, disc_optimizer
-                disc_optimizer.zero_grad()
-                d_loss.backward()
-                disc_optimizer.step()
-                d_loss=torch.tensor([0], requires_grad=True, dtype=torch.float32).to(device)
-                
         else:
             print("No Match.")
-
-        # model_ResNet = ResNet.ResNet(input_channels = input_length*inp_dim,
-        #             output_channels = inp_dim,
-        #             kernel_size = kernel_size).to(device)
-        # print("TF")
-        # print(model)
-        # print("RESNET")
-        # print(model)
-        # elif model_name == 'convlstm':
-        #     model = model_class(input_size=(64, 64), 
-        #                         channels = inp_dim, 
-        #                         hidden_dim = [64], 
-        #                         num_layers = 1).to(device)
-
-        # for batch_data, batch_labels in train_loader:
-        #     print(f"batch size:{batch_data.size()}")
 
         train_loss_fun = torch.nn.MSELoss() if not model_str == 'gan' else gan_loss
         val_loss_fun = torch.nn.MSELoss()
@@ -288,7 +210,7 @@ if __name__ == '__main__':
                     'train_rmse': train_rmse,
                     'valid_rmse': valid_rmse,
                     # any other states or tensors you want to save
-                }, f"{model_name}_complete_model.pth")
+                }, f"{save_direc}{model_name}_complete_model.pth")
             end = time.time()
 
             # Early stopping
